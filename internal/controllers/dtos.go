@@ -15,3 +15,12 @@ type TokenDTO struct {
 	GrantType    string  `json:"grantType" binding:"required"`
 	Scope        *string `json:"scope,omitempty"`
 }
+
+type TokenIntrospectionRequest struct {
+	Token string `json:"token" binding:"required"`
+}
+
+type IntrospectionResponse struct {
+	Active   bool    `json:"active" binding:"required"`
+	ClientId *string `json:"clientId,omitempty"`
+}

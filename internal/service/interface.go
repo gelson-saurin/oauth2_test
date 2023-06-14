@@ -10,4 +10,5 @@ type ServerServiceInterface interface {
 	GetKeys(ctx context.Context, clientId string) []string
 	CreateToken(ctx context.Context, reqData controller.TokenDTO) (string, error)
 	ValidAuthData(data []string) bool
+	ValidateJWT(token, clienId string) (controller.IntrospectionResponse, error)
 }

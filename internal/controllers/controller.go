@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go.uber.org/zap"
 
 	"oauth2-server/internal/controllers/path"
@@ -88,6 +89,34 @@ func (c *ServerConfigController) CreateToken(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"token": data})
 }
 
+func (c *ServerConfigController) CheckToken(ctx *gin.Context) {
+	rawDecodedText, err := c.validateAuth(ctx)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusBadRequest)
+	}
+
+	decodedText := strings.Split(string(rawDecodedText), ":")
+
+	if !c.checkAuthData(decodedText) {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+	}
+
+	var incomeToken TokenIntrospectionRequest
+	errBind := ctx.ShouldBindBodyWith(&incomeToken, binding.JSON)
+	if errBind != nil {
+		c.logger.Debug(fmt.Sprintf("failed to bind token, error: %v", errBind))
+		ctx.AbortWithError(http.StatusBadRequest, errBind)
+	}
+
+	result, errToken := c.service.ValidateJWT(incomeToken.Token, decodedText[0])
+	if errToken != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, errToken)
+	}
+
+	c.logger.Info(fmt.Sprintf("successful token validation"))
+	ctx.JSON(http.StatusOK, gin.H{"token": result})
+}
+
 func (c *ServerConfigController) validateAuth(ctx *gin.Context) ([]byte, error) {
 	var requestCredentials CredentialsHeaderRequest
 	errHeader := ctx.ShouldBindHeader(requestCredentials)
@@ -96,7 +125,9 @@ func (c *ServerConfigController) validateAuth(ctx *gin.Context) ([]byte, error) 
 		return nil, fmt.Errorf("failed to bind header's autorization, status: %v", http.StatusBadRequest)
 	}
 
-	rawDecodedText, err := base64.StdEncoding.DecodeString(requestCredentials.Authorization)
+	authorizationData := strings.Split(requestCredentials.Authorization, " ")
+
+	rawDecodedText, err := base64.StdEncoding.DecodeString(authorizationData[1])
 	if err != nil {
 		c.logger.Debug(fmt.Sprintf("failed to decode autorization, error: %v", err))
 		return nil, fmt.Errorf("failed to decode autorization, status: %v", http.StatusBadRequest)
@@ -112,4 +143,5 @@ func (c *ServerConfigController) checkAuthData(authData []string) bool {
 func (c ServerConfigController) setUpRoutes() {
 	c.engine.GET(path.GetKeys, c.GetKeys)
 	c.engine.POST(path.CreateToken, c.CreateToken)
+	c.engine.POST(path.Introspection, c.CheckToken)
 }

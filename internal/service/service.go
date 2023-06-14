@@ -59,7 +59,7 @@ func (ecs *ServerService) CreateToken(ctx context.Context, token controller.Toke
 	return tokenValue, nil
 }
 
-func (ecs *ServerService) ValidateJWT(t string) error {
+func (ecs *ServerService) ValidateJWT(t, clientId string) (controller.IntrospectionResponse, error) {
 	token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("unauthorized")
@@ -68,13 +68,24 @@ func (ecs *ServerService) ValidateJWT(t string) error {
 		//kid, _ := token.Header["kid"]
 		return Keys.Public(), nil
 	})
+
+	claims := token.Claims.(jwt.MapClaims)
+	if claims["user"] != clientId {
+		return controller.IntrospectionResponse{}, fmt.Errorf("unauthorized")
+	}
+
 	if err != nil {
-		return err
+		return controller.IntrospectionResponse{}, err
 	}
 	if !token.Valid {
-		return fmt.Errorf("unauthorized")
+		return controller.IntrospectionResponse{}, fmt.Errorf("unauthorized")
 	}
-	return nil
+
+	response := controller.IntrospectionResponse{
+		Active:   token.Valid,
+		ClientId: &clientId,
+	}
+	return response, nil
 }
 
 func (ecs *ServerService) ValidAuthData(data []string) bool {

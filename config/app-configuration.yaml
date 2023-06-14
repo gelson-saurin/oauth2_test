@@ -4,17 +4,3 @@ logger:
 app:
   server:
     port: 8080
-
-  aws:
-    dynamo:
-      connConfig:
-        region: local
-        url: http://127.0.0.1:8000
-        httpClient:
-          connectionTimeout: 5s
-          connections:
-            maxConnPerHost: 100
-            maxIdlePerHost: 50
-            maxIdle: 50
-      tables:
-        endpointsConfiguration: EndpointsConfiguration

@@ -15,8 +15,3 @@ type TokenDTO struct {
 	GrantType    string  `json:"grantType" binding:"required"`
 	Scope        *string `json:"scope,omitempty"`
 }
-
-type AuthorizationData struct {
-	ClientId     string
-	ClientSecret string
-}

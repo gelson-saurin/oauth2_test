@@ -4,9 +4,9 @@ This service is a incomplete version of an Oauth2 implementation server.
 <br>
 
 ## Endpoints
-- /token -> create token
-- /keys -> keys list to the clientId in the request
-- /introspection -> check token
+- /token -> create token -> POST
+- /keys -> keys list to the clientId in the request ->GET
+- /introspection -> check token -> POST
 
 ## Improvements proposal:
 - data management 

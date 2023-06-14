@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  dynamodb:
+    image: amazon/dynamodb-local
+    ports:
+      - "8000:8000"
+    environment:
+      - AWS_REGION=local
+      - AWS_ACCESS_KEY_ID=1
+      - AWS_SECRET_ACCESS_KEY=1
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      - AWS_REGION=local
+      - AWS_ACCESS_KEY_ID=1
+      - AWS_SECRET_ACCESS_KEY=1
+      - DYNAMO_ENDPOINT=http://dynamodb:8000
+    depends_on:
+      - "dynamodb"
+  aws-cli-endpoints-configuration-create-table:
+    image: amazon/aws-cli
+    volumes:
+      - ./config/dbtables/:/root/script/
+    depends_on:
+      - "dynamodb"
+    environment:
+      - AWS_REGION=local
+      - AWS_ACCESS_KEY_ID=1
+      - AWS_SECRET_ACCESS_KEY=1
+    command: --endpoint-url=http://dynamodb:8000/ dynamodb create-table --cli-input-json file:///root/script/endpoints_configuration.json

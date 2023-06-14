@@ -1,0 +1,27 @@
+{
+  "TableName": "EndpointsConfiguration",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "url",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "method",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "url",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "method",
+      "KeyType": "RANGE"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 5,
+    "WriteCapacityUnits": 5
+  }
+}

@@ -10,7 +10,7 @@ import (
 
 	"go.uber.org/zap"
 
-	controller "oauth2-server/internal/controllers"
+	controller "oauth2-server/internal/model"
 	"oauth2-server/internal/repository"
 
 	"github.com/golang-jwt/jwt"

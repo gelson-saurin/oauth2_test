@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	controller "oauth2-server/internal/controllers"
+	"oauth2-server/internal/controllers"
 	"oauth2-server/internal/controllers/middlewares"
 	"oauth2-server/internal/repository"
 	"oauth2-server/internal/service"

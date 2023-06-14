@@ -3,12 +3,12 @@ package service
 import (
 	"context"
 
-	controller "oauth2-server/internal/controllers"
+	"oauth2-server/internal/model"
 )
 
 type ServerServiceInterface interface {
 	GetKeys(ctx context.Context, clientId string) []string
-	CreateToken(ctx context.Context, reqData controller.TokenDTO) (string, error)
+	CreateToken(ctx context.Context, reqData model.TokenDTO) (string, error)
 	ValidAuthData(data []string) bool
-	ValidateJWT(token, clienId string) (controller.IntrospectionResponse, error)
+	ValidateJWT(token, clienId string) (model.IntrospectionResponse, error)
 }

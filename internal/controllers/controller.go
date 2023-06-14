@@ -11,6 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"oauth2-server/internal/controllers/path"
+	"oauth2-server/internal/model"
 	"oauth2-server/internal/service"
 )
 
@@ -51,7 +52,7 @@ func (c *ServerConfigController) GetKeys(ctx *gin.Context) {
 }
 
 func (c *ServerConfigController) CreateToken(ctx *gin.Context) {
-	var uriParams UriParamRequest
+	var uriParams model.UriParamRequest
 	errUri := ctx.ShouldBindUri(uriParams)
 	if errUri != nil {
 		c.logger.Debug(fmt.Sprintf("failed to bind URI, error: %v", errUri))
@@ -69,7 +70,7 @@ func (c *ServerConfigController) CreateToken(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 	}
 
-	reqData := TokenDTO{
+	reqData := model.TokenDTO{
 		ClientId:     decodedText[0],
 		ClientSecret: decodedText[1],
 		GrantType:    uriParams.GrantType,
@@ -101,7 +102,7 @@ func (c *ServerConfigController) CheckToken(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 	}
 
-	var incomeToken TokenIntrospectionRequest
+	var incomeToken model.TokenIntrospectionRequest
 	errBind := ctx.ShouldBindBodyWith(&incomeToken, binding.JSON)
 	if errBind != nil {
 		c.logger.Debug(fmt.Sprintf("failed to bind token, error: %v", errBind))
@@ -118,7 +119,7 @@ func (c *ServerConfigController) CheckToken(ctx *gin.Context) {
 }
 
 func (c *ServerConfigController) validateAuth(ctx *gin.Context) ([]byte, error) {
-	var requestCredentials CredentialsHeaderRequest
+	var requestCredentials model.CredentialsHeaderRequest
 	errHeader := ctx.ShouldBindHeader(requestCredentials)
 	if errHeader != nil {
 		c.logger.Debug(fmt.Sprintf("failed to bind header's autorization, error: %v", errHeader))

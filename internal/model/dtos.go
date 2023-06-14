@@ -1,4 +1,4 @@
-package controller
+package model
 
 type UriParamRequest struct {
 	GrantType string  `json:"grantType" binding:"required"`

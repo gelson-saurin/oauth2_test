@@ -7,7 +7,6 @@ import (
 	"go.uber.org/zap"
 
 	"oauth2-server/internal/controllers"
-	"oauth2-server/internal/controllers/middlewares"
 	"oauth2-server/internal/repository"
 	"oauth2-server/internal/service"
 )
@@ -19,9 +18,6 @@ func main() {
 	}
 
 	r := gin.Default()
-	r.Use(middlewares.RequestLogger(logger))
-	r.Use(middlewares.Recovery(logger))
-	r.Use(middlewares.LogResponseBody(logger))
 	rep := repository.NewServerRepository()
 	srv := service.NewEndpointConfigService(rep, logger)
 	controller.NewServerConfigController(r, srv, logger)

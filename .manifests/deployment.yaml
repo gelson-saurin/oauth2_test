@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-server-app-deployment
+  namespace: oauth2server  # Add the namespace here
+  labels:
+    app: oauth2-server-app # Same as selector.app in service.yaml
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: oauth2-server-app
+  template:
+    metadata:
+      labels:
+        app: oauth2-server-app
+    spec:
+      containers:
+        - name: oauth2-server-app
+          image: rodalvarezsm/simple_server_oauth2:latest
+          ports:
+            - containerPort: 8080
